@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zhandarbek — С Новым 2027 годом!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+          },
+          colors: {
+            midnight: '#070d1d',
+            midnightLight: '#0f1b38',
+            gold: '#f5c76b',
+            goldBright: '#ffe39f',
+            warmAmber: '#d99b38',
+          },
+          keyframes: {
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% center' },
+              '100%': { backgroundPosition: '200% center' },
+            },
+            fadeSlideUp: {
+              '0%': { opacity: '0', transform: 'translateY(18px) scale(0.98)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 24px rgba(245, 199, 107, 0.25)' },
+              '50%': { boxShadow: '0 0 42px rgba(245, 199, 107, 0.5)' },
+            },
+          },
+          animation: {
+            floatSlow: 'floatSlow 4.5s ease-in-out infinite',
+            shimmer: 'shimmer 4s linear infinite',
+            fadeSlideUp: 'fadeSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            pulseGlow: 'pulseGlow 3s ease-in-out infinite',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Плавный зимний фон и декоративные свечения */
+    body {
+      background: radial-gradient(circle at top, #13244c 0%, #070d1d 55%, #040711 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Полотно для падающего снега поверх фона */
+    #snowCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Золотой градиентный текст */
+    .gold-text {
+      background: linear-gradient(90deg, #e5b24c 0%, #fff0bd 45%, #f5c76b 70%, #c98a28 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 5s linear infinite;
+    }
+
+    /* Стеклянная карточка с золотой каймой */
+    .festive-glass {
+      background: linear-gradient(145deg, rgba(17, 31, 64, 0.86), rgba(8, 15, 33, 0.92));
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(245, 199, 107, 0.28);
+      box-shadow:
+        0 25px 60px -15px rgba(0, 0, 0, 0.75),
+        inset 0 1px 0 0 rgba(255, 240, 189, 0.2);
+    }
+
+    /* Эффект конверта до открытия */
+    .envelope-flap {
+      clip-path: polygon(0 0, 50% 62%, 100% 0);
+    }
+
+    .envelope-pocket {
+      clip-path: polygon(0 0, 50% 48%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    /* Кастомный скроллбар для панели настроек */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 27, 56, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(245, 199, 107, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(245, 199, 107, 0.55);
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-gold/30 selection:text-goldBright">
+  <!-- Холст падающего снега -->
+  <canvas id="snowCanvas" aria-hidden="true"></canvas>
+
+  <!-- Мягкие фоновые огни -->
+  <div class="fixed top-[-120px] left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full bg-amber-500/10 blur-[130px] pointer-events-none z-0"></div>
+  <div class="fixed bottom-[-140px] right-[-80px] w-[420px] h-[420px] rounded-full bg-sky-400/10 blur-[120px] pointer-events-none z-0"></div>
+
+  <!-- Основной контейнер приложения -->
+  <div class="relative z-10 min-h-screen flex flex-col justify-between px-4 py-6 sm:px-6 lg:px-8">
+    <!-- Верхняя панель навигации и быстрых действий -->
+    <header class="w-full max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div class="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-midnightLight/75 border border-gold/20 backdrop-blur-md">
+        <!-- SVG снежинка -->
+        <svg class="w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="2" x2="12" y2="22"></line>
+          <path d="m17 7-5-5-5 5"></path>
+          <path d="m17 17-5 5-5-5"></path>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="m7 7-5 5 5 5"></path>
+          <path d="m17 7 5 5-5 5"></path>
+        </svg>
+        <span class="text-xs sm:text-sm font-semibold tracking-wide text-goldBright">Zhandarbek</span>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button
+          id="openEditorBtn"
+          type="button"
+          class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-medium bg-midnightLight/85 hover:bg-midnightLight text-slate-100 border border-gold/25 hover:border-gold/50 transition-all duration-200 cursor-pointer"
+        >
+          <!-- Иконка настроек / редактирования -->
+          <svg class="w-4 h-4 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+          </svg>
+          <span>Настроить</span>
+        </button>
+
+        <button
+          id="quickCopyLinkBtn"
+          type="button"
+          class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-midnight hover:brightness-105 active:scale-[0.99] transition-all duration-200 shadow-lg shadow-amber-500/20 cursor-pointer"
+        >
+          <!-- Иконка ссылки -->
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          <span>Скопировать ссылку</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Главная сцена -->
+    <main class="w-full max-w-4xl mx-auto my-auto flex flex-col items-center justify-center">
+      <!-- ЭТАП 1: Праздничный конверт перед открытием -->
+      <section
+        id="envelopeStage"
+        class="w-full max-w-lg mx-auto text-center py-4 animate-fadeSlideUp"
+        aria-label="Новогодний конверт"
+      >
+        <div class="mb-6">
+          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium tracking-wider uppercase bg-gold/10 text-goldBright border border-gold/25">
+            <span>✨</span>
+            <span>Вам пришло поздравление</span>
+            <span>✨</span>
+          </span>
+        </div>
+
+        <!-- Визуальный конверт -->
+        <div
+          id="envelopeVisual"
+          role="button"
+          tabindex="0"
+          aria-label="Открыть новогоднее поздравление"
+          class="group relative w-full max-w-md mx-auto aspect-[16/10] rounded-3xl festive-glass overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02] animate-pulseGlow"
+        >
+          <!-- Верхний клапан конверта -->
+          <div class="envelope-flap absolute inset-x-0 top-0 h-3/5 bg-gradient-to-b from-amber-500/25 via-gold/15 to-transparent border-b border-gold/20 transition-transform duration-500 group-hover:translate-y-[-2px]"></div>
+
+          <!-- Нижний карман конверта -->
+          <div class="envelope-pocket absolute inset-0 bg-gradient-to-t from-midnight/95 via-midnightLight/75 to-transparent"></div>
+
+          <!-- Золотая печать по центру -->
+          <div class="relative z-10 h-full flex flex-col items-center justify-center p-6">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-goldBright via-gold to-warmAmber text-midnight flex items-center justify-center shadow-2xl shadow-amber-500/30 mb-3 transition-transform duration-300 group-hover:scale-110">
+              <!-- Иконка ёлки / звезды -->
+              <svg class="w-8 h-8 sm:w-10 sm:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+            <p class="font-serif text-2xl sm:text-3xl font-bold text-goldBright drop-shadow">
+              С Новым 2027 годом!
+            </p>
+            <p id="envelopeRecipientHint" class="mt-1 text-xs sm:text-sm text-slate-300/90">
+              Поздравление от: Zhandarbek • Нажмите, чтобы открыть
+            </p>
+          </div>
+        </div>
+
+        <button
+          id="openGreetingBtn"
+          type="button"
+          class="mt-7 inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold bg-gradient-to-r from-amber-300 via-gold to-amber-500 text-midnight shadow-xl shadow-amber-500/25 hover:brightness-105 active:scale-[0.98] transition-all duration-200 cursor-pointer"
+        >
+          <span>Открыть поздравление</span>
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+          </svg>
+        </button>
+      </section>
+
+      <!-- ЭТАП 2: Открытая праздничная открытка -->
+      <article
+        id="greetingCardStage"
+        class="hidden w-full festive-glass rounded-[2rem] p-5 sm:p-8 lg:p-10 relative overflow-hidden"
+        aria-label="Новогодняя открытка с пожеланиями и фото"
+      >
+        <!-- Декоративные уголки из золотых линий -->
+        <div class="hidden sm:block absolute top-5 left-5 w-10 h-10 border-t-2 border-l-2 border-gold/40 rounded-tl-xl pointer-events-none"></div>
+        <div class="hidden sm:block absolute top-5 right-5 w-10 h-10 border-t-2 border-r-2 border-gold/40 rounded-tr-xl pointer-events-none"></div>
+        <div class="hidden sm:block absolute bottom-5 left-5 w-10 h-10 border-b-2 border-l-2 border-gold/40 rounded-bl-xl pointer-events-none"></div>
+        <div class="hidden sm:block absolute bottom-5 right-5 w-10 h-10 border-b-2 border-r-2 border-gold/40 rounded-br-xl pointer-events-none"></div>
+
+        <!-- Шапка открытки -->
+        <div class="text-center max-w-2xl mx-auto mb-7 sm:mb-9">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gold/10 border border-gold/25 text-goldBright text-xs sm:text-sm font-medium mb-3">
+            <span>🎄</span>
+            <span id="displayYearBadge">Zhandarbek • С Новым 2027 годом!</span>
+            <span>🥂</span>
+          </div>
+
+          <h1 id="displayGreetingTitle" class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold gold-text leading-tight">
+            С Новым 2027 годом!
+          </h1>
+
+          <p id="displayRecipientLine" class="mt-2 text-sm sm:text-base text-slate-300">
+            Пусть 2027 год принесёт тепло, яркие путешествия и исполнение самых заветных желаний
+          </p>
+        </div>
+
+        <!-- Основная сетка: Фотография + Текст пожеланий -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+          <!-- Блок фотографии (5 колонок на десктопе) -->
+          <div class="lg:col-span-5 flex flex-col items-center">
+            <div class="w-full max-w-[330px] sm:max-w-[360px] relative group">
+              <!-- Золотая рамка вокруг фото -->
+              <div class="p-2.5 sm:p-3 rounded-[1.75rem] bg-gradient-to-br from-goldBright/80 via-gold/50 to-warmAmber/70 shadow-2xl shadow-black/50">
+                <div class="relative aspect-[4/5] w-full rounded-[1.25rem] overflow-hidden bg-midnightLight">
+                  <img
+                    id="displayPhotoImg"
+                    src="WhatsApp Image 2026-11-24 at 15.45.21 (1).jpg"
+                    alt="Zhandarbek — праздничное фото"
+                    class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+
+                  <!-- Нижняя подпись поверх фото -->
+                  <div class="absolute inset-x-0 bottom-0 p-3.5 bg-gradient-to-t from-midnight/95 via-midnight/60 to-transparent">
+                    <p id="displayPhotoCaption" class="text-xs sm:text-sm font-medium text-goldBright text-center">
+                      Zhandarbek • С теплом и праздничным настроением
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Кнопка быстрой смены фото прямо под рамкой -->
+              <div class="mt-3.5 flex flex-wrap items-center justify-center gap-2">
+                <label
+                  for="quickPhotoInput"
+                  class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-midnightLight/90 hover:bg-midnight border border-gold/30 hover:border-gold text-goldBright transition-all cursor-pointer"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Заменить фото</span>
+                </label>
+                <input id="quickPhotoInput" type="file" accept="image/*" class="hidden" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Блок пожеланий и подписи (7 колонок на десктопе) -->
+          <div class="lg:col-span-7 flex flex-col justify-between space-y-5">
+            <div class="rounded-2xl bg-midnight/55 border border-gold/20 p-5 sm:p-6">
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-xs font-semibold uppercase tracking-wider text-gold">
+                  Новогодние пожелания на 2027 год
+                </span>
+                <button
+                  id="cycleWishBtn"
+                  type="button"
+                  class="inline-flex items-center gap-1.5 text-xs font-medium text-goldBright hover:text-gold transition-colors cursor-pointer"
+                  title="Подставить готовое пожелание"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                    <path d="M16 16h5v5"></path>
+                  </svg>
+                  <span>Другое пожелание</span>
+                </button>
+              </div>
+
+              <p id="displayWishText" class="text-slate-100 text-base sm:text-lg leading-relaxed whitespace-pre-line">
+                Пусть Новый 2027 год войдёт в ваш дом с ароматом хвои, мандаринов и добрых чудес! Желаю крепкого здоровья, душевного спокойствия, ярких путешествий, верных друзей рядом и смелых побед в каждом начинании. Пусть каждый день нового года дарит повод для искренней улыбки!
+              </p>
+            </div>
+
+            <!-- Список коротких пожеланий-акцентов -->
+            <div id="displayHighlights" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="rounded-2xl bg-gold/10 border border-gold/20 p-3.5 text-center">
+                <div class="text-lg mb-1">✨</div>
+                <div class="text-xs sm:text-sm font-medium text-goldBright">Счастья и гармонии</div>
+              </div>
+              <div class="rounded-2xl bg-gold/10 border border-gold/20 p-3.5 text-center">
+                <div class="text-lg mb-1">💫</div>
+                <div class="text-xs sm:text-sm font-medium text-goldBright">Исполнения мечты</div>
+              </div>
+              <div class="rounded-2xl bg-gold/10 border border-gold/20 p-3.5 text-center">
+                <div class="text-lg mb-1">❄️</div>
+                <div class="text-xs sm:text-sm font-medium text-goldBright">Уюта и тепла</div>
+              </div>
+            </div>
+
+            <!-- Подпись отправителя и кнопки действий -->
+            <div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-gold/15">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-slate-400">С любовью и наилучшими пожеланиями,</p>
+                <p id="displaySenderName" class="font-serif text-2xl font-bold text-goldBright">
+                  От Zhandarbek
+                </p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2.5">
+                <button
+                  id="replayEnvelopeBtn"
+                  type="button"
+                  class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-midnightLight hover:bg-midnight border border-slate-700 hover:border-gold/40 text-slate-200 transition-all cursor-pointer"
+                >
+                  Свернуть конверт
+                </button>
+                <button
+                  id="shareCardBtn"
+                  type="button"
+                  class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-amber-300 via-gold to-amber-500 text-midnight shadow-lg shadow-amber-500/20 hover:brightness-105 transition-all cursor-pointer"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                  <span>Поделиться ссылкой</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <!-- Небольшой подвал -->
+    <footer class="w-full max-w-4xl mx-auto mt-8 text-center text-xs text-slate-400">
+      <p>Настройки сохраняются в браузере и в ссылке — вы можете легко отправить поздравление близким.</p>
+    </footer>
+  </div>
+
+  <!-- Модальное окно / панель настройки открытки и фото -->
+  <div
+    id="editorModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="editorModalTitle"
+  >
+    <div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl festive-glass p-5 sm:p-7 relative animate-fadeSlideUp">
+      <div class="flex items-center justify-between gap-4 pb-4 border-b border-gold/20">
+        <div>
+          <h2 id="editorModalTitle" class="font-serif text-2xl sm:text-3xl font-bold text-goldBright">
+            Настройка открытки
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
+            Добавьте своё фото, текст поздравления и создайте персональную ссылку
+          </p>
+        </div>
+
+        <button
+          id="closeEditorBtn"
+          type="button"
+          aria-label="Закрыть окно настроек"
+          class="w-10 h-10 rounded-xl bg-midnightLight hover:bg-midnight border border-gold/25 flex items-center justify-center text-slate-200 hover:text-goldBright transition-colors cursor-pointer"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="greetingForm" class="mt-5 space-y-5">
+        <!-- Секция загрузки фото -->
+        <div class="rounded-2xl bg-midnight/60 border border-gold/20 p-4 space-y-3">
+          <label class="block text-sm font-semibold text-goldBright">
+            Ваше фото для открытки
+          </label>
+
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <img
+              id="modalPhotoPreview"
+              src="WhatsApp Image 2026-11-24 at 15.45.21 (1).jpg"
+              alt="Предпросмотр фото Zhandarbek"
+              class="w-20 h-24 rounded-2xl object-cover border border-gold/35 shrink-0 bg-midnightLight"
+            />
+
+            <div class="flex-1 w-full space-y-2.5">
+              <div class="flex flex-wrap gap-2">
+                <label
+                  for="modalPhotoFile"
+                  class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gold text-midnight hover:brightness-105 transition-all cursor-pointer"
+                >
+                  <span>Выбрать файл с устройства</span>
+                </label>
+                <input id="modalPhotoFile" type="file" accept="image/*" class="hidden" />
+
+                <button
+                  id="resetPhotoBtn"
+                  type="button"
+                  class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-midnightLight hover:bg-midnight border border-slate-700 text-slate-200 transition-colors cursor-pointer"
+                >
+                  Фото Zhandarbek
+                </button>
+              </div>
+
+              <div>
+                <label for="photoUrlInput" class="block text-xs text-slate-400 mb-1">
+                  Или вставьте прямую ссылку на фото (URL):
+                </label>
+                <input
+                  id="photoUrlInput"
+                  type="url"
+                  placeholder="https://example.com/my-photo.jpg"
+                  class="w-full px-3.5 py-2 rounded-xl text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100 placeholder-slate-500"
+                />
+              </div>
+              <p id="photoSizeHint" class="text-[11px] text-slate-400">
+                Совет: загруженные файлы автоматически сжимаются для быстрой работы и сохранения в браузере.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Заголовок, кому и от кого -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="titleInput" class="block text-xs font-semibold uppercase tracking-wider text-gold mb-1.5">
+              Заголовок поздравления
+            </label>
+            <input
+              id="titleInput"
+              type="text"
+              required
+              maxlength="90"
+              class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label for="senderInput" class="block text-xs font-semibold uppercase tracking-wider text-gold mb-1.5">
+              От кого (ваше имя)
+            </label>
+            <input
+              id="senderInput"
+              type="text"
+              required
+              maxlength="60"
+              class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="subtitleInput" class="block text-xs font-semibold uppercase tracking-wider text-gold mb-1.5">
+              Тёплая фраза под заголовком
+            </label>
+            <input
+              id="subtitleInput"
+              type="text"
+              maxlength="140"
+              class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label for="captionInput" class="block text-xs font-semibold uppercase tracking-wider text-gold mb-1.5">
+              Подпись под фотографией
+            </label>
+            <input
+              id="captionInput"
+              type="text"
+              maxlength="80"
+              class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100"
+            />
+          </div>
+        </div>
+
+        <!-- Текст пожеланий -->
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <label for="wishInput" class="block text-xs font-semibold uppercase tracking-wider text-gold">
+              Текст новогодних пожеланий
+            </label>
+            <button
+              id="insertSampleWishBtn"
+              type="button"
+              class="text-xs text-goldBright hover:underline cursor-pointer"
+            >
+              Вставить пример пожелания
+            </button>
+          </div>
+          <textarea
+            id="wishInput"
+            rows="4"
+            required
+            maxlength="700"
+            class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100 leading-relaxed"
+          ></textarea>
+        </div>
+
+        <!-- Три акцента-пожелания -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gold mb-1.5">
+            Три главных пожелания в карточках
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <input
+              id="tag1Input"
+              type="text"
+              maxlength="32"
+              placeholder="Счастья и гармонии"
+              class="w-full px-3 py-2 rounded-xl text-xs sm:text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100"
+            />
+            <input
+              id="tag2Input"
+              type="text"
+              maxlength="32"
+              placeholder="Исполнения мечты"
+              class="w-full px-3 py-2 rounded-xl text-xs sm:text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100"
+            />
+            <input
+              id="tag3Input"
+              type="text"
+              maxlength="32"
+              placeholder="Уюта и тепла"
+              class="w-full px-3 py-2 rounded-xl text-xs sm:text-sm bg-midnightLight border border-slate-700 focus:border-gold focus:outline-none text-slate-100"
+            />
+          </div>
+        </div>
+
+        <!-- Сгенерированная ссылка для отправки -->
+        <div class="rounded-2xl bg-midnight/75 border border-gold/25 p-3.5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-goldBright">Ссылка для отправки 🔗</span>
+            <button
+              id="modalCopyLinkBtn"
+              type="button"
+              class="text-xs font-semibold text-gold hover:text-goldBright cursor-pointer"
+            >
+              Скопировать
+            </button>
+          </div>
+          <input
+            id="shareLinkField"
+            type="text"
+            readonly
+            class="w-full px-3 py-2 rounded-xl text-xs bg-midnightLight/90 border border-slate-700/80 text-slate-300 select-all"
+          />
+        </div>
+
+        <!-- Кнопки сохранения -->
+        <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-2">
+          <button
+            id="restoreDefaultsBtn"
+            type="button"
+            class="px-4 py-2.5 rounded-xl text-sm font-medium bg-midnightLight hover:bg-midnight border border-slate-700 text-slate-300 transition-colors cursor-pointer"
+          >
+            Сбросить по умолчанию
+          </button>
+          <button
+            type="submit"
+            class="px-6 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-300 via-gold to-amber-500 text-midnight shadow-lg shadow-amber-500/20 hover:brightness-105 transition-all cursor-pointer"
+          >
+            Сохранить и обновить ссылку
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Всплывающее уведомление (тост) вместо alert() -->
+  <div
+    id="toastBanner"
+    role="status"
+    aria-live="polite"
+    class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] hidden items-center gap-2.5 px-5 py-3 rounded-2xl bg-midnightLight/95 text-goldBright border border-gold/40 shadow-2xl text-xs sm:text-sm font-medium backdrop-blur-md transition-all"
+  >
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">Ссылка скопирована!</span>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // =========================================================================
+      // 1. КОНСТАНТЫ И ГОТОВЫЕ ПРАЗДНИЧНЫЕ ШАБЛОНЫ
+      // =========================================================================
+      const STORAGE_KEY = 'zhandarbek_ny_2027_v1';
+      const FALLBACK_PLACEHOLDER_URL =
+        'https://placehold.co/640x800/13244c/ffe39f?text=Zhandarbek%0A%E2%9C%A8+%D0%A1+%D0%9D%D0%BE%D0%B2%D1%8B%D0%BC+2027+%D0%B3%D0%BE%D0%B4%D0%BE%D0%BC';
+      const DEFAULT_PHOTO_URL = 'WhatsApp Image 2026-11-24 at 15.45.21 (1).jpg';
+
+      const DEFAULT_STATE = {
+        title: 'С Новым 2027 годом!',
+        subtitle: 'Пусть 2027 год принесёт тепло, яркие путешествия и исполнение самых заветных желаний',
+        wish: 'Пусть Новый 2027 год войдёт в ваш дом с ароматом хвои, мандаринов и добрых чудес! Желаю крепкого здоровья, душевного спокойствия, ярких путешествий, верных друзей рядом и смелых побед в каждом начинании. Пусть каждый день нового года дарит повод для искренней улыбки!',
+        sender: 'От Zhandarbek',
+        caption: 'Zhandarbek • С теплом и праздничным настроением',
+        photo: DEFAULT_PHOTO_URL,
+        tags: ['Счастья и гармонии', 'Исполнения мечты', 'Уюта и тепла'],
+        opened: false,
+      };
+
+      const SAMPLE_WISHES = [
+        'Пусть Новый 2027 год войдёт в ваш дом с ароматом хвои, мандаринов и добрых чудес! Желаю крепкого здоровья, душевного спокойствия, ярких путешествий, верных друзей рядом и смелых побед в каждом начинании. Пусть каждый день нового года дарит повод для искренней улыбки!',
+        'От всей души поздравляю с Новым 2027 годом! Пусть в жизни будет больше светлых моментов, искренних разговоров, больших успехов и вдохновения. Пусть сбудется всё, о чём мечталось тихими зимними вечерами!',
+        'С Новым 2027 годом! Желаю, чтобы удача шла с вами рука об руку весь год, дома всегда царили уют и любовь, а любые перемены открывали новые горизонты. Волшебного настроения и ярких праздников!',
+      ];
+
+      let currentState = structuredClone ? structuredClone(DEFAULT_STATE) : { ...DEFAULT_STATE, tags: [...DEFAULT_STATE.tags] };
+      let wishCycleIndex = 0;
+      let toastTimeoutId = null;
+
+      // =========================================================================
+      // 2. ССЫЛКИ НА ЭЛЕМЕНТЫ DOM
+      // =========================================================================
+      const dom = {
+        envelopeStage: document.getElementById('envelopeStage'),
+        envelopeVisual: document.getElementById('envelopeVisual'),
+        openGreetingBtn: document.getElementById('openGreetingBtn'),
+        envelopeRecipientHint: document.getElementById('envelopeRecipientHint'),
+        greetingCardStage: document.getElementById('greetingCardStage'),
+        replayEnvelopeBtn: document.getElementById('replayEnvelopeBtn'),
+
+        displayGreetingTitle: document.getElementById('displayGreetingTitle'),
+        displayRecipientLine: document.getElementById('displayRecipientLine'),
+        displayPhotoImg: document.getElementById('displayPhotoImg'),
+        displayPhotoCaption: document.getElementById('displayPhotoCaption'),
+        displayWishText: document.getElementById('displayWishText'),
+        displaySenderName: document.getElementById('displaySenderName'),
+        displayHighlights: document.getElementById('displayHighlights'),
+
+        quickPhotoInput: document.getElementById('quickPhotoInput'),
+        cycleWishBtn: document.getElementById('cycleWishBtn'),
+        quickCopyLinkBtn: document.getElementById('quickCopyLinkBtn'),
+        shareCardBtn: document.getElementById('shareCardBtn'),
+
+        openEditorBtn: document.getElementById('openEditorBtn'),
+        closeEditorBtn: document.getElementById('closeEditorBtn'),
+        editorModal: document.getElementById('editorModal'),
+        greetingForm: document.getElementById('greetingForm'),
+
+        modalPhotoPreview: document.getElementById('modalPhotoPreview'),
+        modalPhotoFile: document.getElementById('modalPhotoFile'),
+        resetPhotoBtn: document.getElementById('resetPhotoBtn'),
+        photoUrlInput: document.getElementById('photoUrlInput'),
+        titleInput: document.getElementById('titleInput'),
+        senderInput: document.getElementById('senderInput'),
+        subtitleInput: document.getElementById('subtitleInput'),
+        captionInput: document.getElementById('captionInput'),
+        wishInput: document.getElementById('wishInput'),
+        insertSampleWishBtn: document.getElementById('insertSampleWishBtn'),
+        tag1Input: document.getElementById('tag1Input'),
+        tag2Input: document.getElementById('tag2Input'),
+        tag3Input: document.getElementById('tag3Input'),
+        shareLinkField: document.getElementById('shareLinkField'),
+        modalCopyLinkBtn: document.getElementById('modalCopyLinkBtn'),
+        restoreDefaultsBtn: document.getElementById('restoreDefaultsBtn'),
+
+        toastBanner: document.getElementById('toastBanner'),
+        toastIcon: document.getElementById('toastIcon'),
+        toastMessage: document.getElementById('toastMessage'),
+      };
+
+      // =========================================================================
+      // 3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (УВЕДОМЛЕНИЯ, КОДИРОВАНИЕ ССЫЛКИ, СЖАТИЕ ФОТО)
+      // =========================================================================
+      function showToast(message, icon = '✨') {
+        try {
+          if (!dom.toastBanner || !dom.toastMessage) return;
+          dom.toastIcon.textContent = icon;
+          dom.toastMessage.textContent = message;
+          dom.toastBanner.classList.remove('hidden');
+          dom.toastBanner.classList.add('flex');
+
+          if (toastTimeoutId) {
+            clearTimeout(toastTimeoutId);
+          }
+          toastTimeoutId = setTimeout(() => {
+            dom.toastBanner.classList.add('hidden');
+            dom.toastBanner.classList.remove('flex');
+          }, 3200);
+        } catch (err) {
+          console.error('Ошибка отображения уведомления:', err);
+        }
+      }
+
+      /**
+       * Кодирует объект состояния в безопасный base64url для URL-параметра
+       */
+      function encodeStateToParam(stateObj) {
+        const isDefaultLocalPhoto = stateObj.photo === DEFAULT_PHOTO_URL;
+        const payload = {
+          t: stateObj.title,
+          st: stateObj.subtitle,
+          w: stateObj.wish,
+          s: stateObj.sender,
+          c: stateObj.caption,
+          g: stateObj.tags,
+          // Включаем фото в ссылку, если оно не совпадает с локальным файлом по умолчанию и помещается в URL
+          p: !isDefaultLocalPhoto && stateObj.photo && stateObj.photo.length < 18000 ? stateObj.photo : '',
+        };
+        const jsonStr = JSON.stringify(payload);
+        const bytes = new TextEncoder().encode(jsonStr);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      }
+
+      /**
+       * Декодирует параметры из URL (?card=... или отдельные параметры ?title=...&from=...&wish=...)
+       */
+      function decodeStateFromUrl() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const encodedCard = params.get('card');
+
+          if (encodedCard) {
+            const base64 = encodedCard.replace(/-/g, '+').replace(/_/g, '/');
+            const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+            const binary = atob(padded);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+              bytes[i] = binary.charCodeAt(i);
+            }
+            const jsonStr = new TextDecoder().decode(bytes);
+            const parsed = JSON.parse(jsonStr);
+
+            return {
+              title: typeof parsed.t === 'string' && parsed.t.trim() ? parsed.t.trim() : DEFAULT_STATE.title,
+              subtitle: typeof parsed.st === 'string' ? parsed.st : DEFAULT_STATE.subtitle,
+              wish: typeof parsed.w === 'string' && parsed.w.trim() ? parsed.w.trim() : DEFAULT_STATE.wish,
+              sender: typeof parsed.s === 'string' && parsed.s.trim() ? parsed.s.trim() : DEFAULT_STATE.sender,
+              caption: typeof parsed.c === 'string' ? parsed.c : DEFAULT_STATE.caption,
+              photo: typeof parsed.p === 'string' && parsed.p.trim() ? parsed.p.trim() : '',
+              tags: Array.isArray(parsed.g) && parsed.g.length === 3
+                ? parsed.g.map((item, idx) => (typeof item === 'string' && item.trim() ? item.trim() : DEFAULT_STATE.tags[idx]))
+                : [...DEFAULT_STATE.tags],
+              opened: params.get('open') === '1',
+            };
+          }
+
+          // Поддержка простых query-параметров вида ?to=Анна&from=Максим&wish=...&photo=...
+          const toParam = params.get('to');
+          const titleParam = params.get('title');
+          const fromParam = params.get('from');
+          const wishParam = params.get('wish');
+          const photoParam = params.get('photo');
+          const subtitleParam = params.get('subtitle');
+
+          if (toParam || titleParam || fromParam || wishParam || photoParam || subtitleParam) {
+            return {
+              title: titleParam
+                ? titleParam
+                : toParam
+                  ? `С Новым годом, ${toParam}!`
+                  : DEFAULT_STATE.title,
+              subtitle: subtitleParam || DEFAULT_STATE.subtitle,
+              wish: wishParam || DEFAULT_STATE.wish,
+              sender: fromParam || DEFAULT_STATE.sender,
+              caption: DEFAULT_STATE.caption,
+              photo: photoParam || '',
+              tags: [...DEFAULT_STATE.tags],
+              opened: params.get('open') === '1',
+            };
+          }
+
+          return null;
+        } catch (err) {
+          console.warn('Не удалось прочитать параметры ссылки:', err);
+          return null;
+        }
+      }
+
+      /**
+       * Формирует актуальную ссылку для шаринга
+       */
+      function buildShareableUrl() {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('to');
+          url.searchParams.delete('title');
+          url.searchParams.delete('from');
+          url.searchParams.delete('wish');
+          url.searchParams.delete('photo');
+          url.searchParams.delete('subtitle');
+          url.searchParams.set('card', encodeStateToParam(currentState));
+          return url.toString();
+        } catch (err) {
+          return window.location.href;
+        }
+      }
+
+      /**
+       * Копирует текст в буфер обмена с fallback через execCommand для iframe
+       */
+      function copyTextToClipboard(text) {
+        if (!text) return;
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          navigator.clipboard.writeText(text).then(
+            () => showToast('Ссылка скопирована в буфер обмена!', '🔗'),
+            () => fallbackCopy(text)
+          );
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        try {
+          const tempInput = document.createElement('input');
+          tempInput.value = text;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand('copy');
+          document.body.removeChild(tempInput);
+          showToast('Ссылка скопирована!', '🔗');
+        } catch (err) {
+          showToast('Выделите и скопируйте ссылку вручную', '📋');
+        }
+      }
+
+      /**
+       * Сжимает выбранное пользователем фото через Canvas до аккуратного размера,
+       * чтобы оно быстро отображалось и помещалось в localStorage/URL без перегрузки.
+       */
+      function compressImageFile(file, maxSide = 720, quality = 0.78) {
+        return new Promise((resolve, reject) => {
+          if (!file || !file.type.startsWith('image/')) {
+            reject(new Error('Выберите файл изображения'));
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            const img = new Image();
+            img.onload = function () {
+              let width = img.width;
+              let height = img.height;
+
+              if (width > height && width > maxSide) {
+                height = Math.round((height * maxSide) / width);
+                width = maxSide;
+              } else if (height >= width && height > maxSide) {
+                width = Math.round((width * maxSide) / height);
+                height = maxSide;
+              }
+
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                reject(new Error('Не удалось обработать изображение'));
+                return;
+              }
+
+              ctx.drawImage(img, 0, 0, width, height);
+              const dataUrl = canvas.toDataURL('image/jpeg', quality);
+              resolve(dataUrl);
+            };
+            img.onerror = function () {
+              reject(new Error('Не удалось загрузить изображение'));
+            };
+            img.src = event.target.result;
+          };
+          reader.onerror = function () {
+            reject(new Error('Ошибка чтения файла'));
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // =========================================================================
+      // 4. СОХРАНЕНИЕ И ЗАГРУЗКА СОСТОЯНИЯ
+      // =========================================================================
+      function saveState(syncUrl = true) {
+        try {
+          const toStore = {
+            ...currentState,
+            opened: undefined,
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
+
+          if (syncUrl && window.history && typeof window.history.replaceState === 'function') {
+            const nextUrl = buildShareableUrl();
+            window.history.replaceState(null, '', nextUrl);
+          }
+
+          if (dom.shareLinkField) {
+            dom.shareLinkField.value = buildShareableUrl();
+          }
+        } catch (err) {
+          console.warn('Не удалось сохранить настройки:', err);
+        }
+      }
+
+      function loadInitialState() {
+        const urlState = decodeStateFromUrl();
+        let savedState = null;
+
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            savedState = JSON.parse(raw);
+          }
+        } catch (err) {
+          console.warn('Не удалось прочитать localStorage:', err);
+        }
+
+        if (urlState) {
+          currentState = {
+            ...DEFAULT_STATE,
+            ...(savedState || {}),
+            ...urlState,
+            photo: urlState.photo || (savedState && savedState.photo) || DEFAULT_PHOTO_URL,
+            tags: urlState.tags || (savedState && savedState.tags) || [...DEFAULT_STATE.tags],
+          };
+          // Если зашли по специальной ссылке с поздравлением, открываем открытку сразу или по кнопке
+          if (urlState.opened) {
+            currentState.opened = true;
+          }
+        } else if (savedState) {
+          currentState = {
+            ...DEFAULT_STATE,
+            ...savedState,
+            photo: savedState.photo || DEFAULT_PHOTO_URL,
+            tags: Array.isArray(savedState.tags) && savedState.tags.length === 3 ? savedState.tags : [...DEFAULT_STATE.tags],
+            opened: false,
+          };
+        } else {
+          currentState = {
+            ...DEFAULT_STATE,
+            tags: [...DEFAULT_STATE.tags],
+          };
+        }
+      }
+
+      // =========================================================================
+      // 5. ОТРИСОВКА ИНТЕРФЕЙСА И ПЕРЕКЛЮЧЕНИЕ КОНВЕРТА / ОТКРЫТКИ
+      // =========================================================================
+      function renderGreeting() {
+        dom.displayGreetingTitle.textContent = currentState.title || DEFAULT_STATE.title;
+        dom.displayRecipientLine.textContent = currentState.subtitle || DEFAULT_STATE.subtitle;
+        dom.displayWishText.textContent = currentState.wish || DEFAULT_STATE.wish;
+        dom.displaySenderName.textContent = currentState.sender || DEFAULT_STATE.sender;
+        dom.displayPhotoCaption.textContent = currentState.caption || DEFAULT_STATE.caption;
+
+        dom.envelopeRecipientHint.textContent = `Поздравление от: ${currentState.sender || 'Ваш друг'} • Нажмите, чтобы открыть`;
+
+        const activePhoto = currentState.photo && currentState.photo.trim() ? currentState.photo.trim() : DEFAULT_PHOTO_URL;
+        dom.displayPhotoImg.src = activePhoto;
+        dom.displayPhotoImg.onerror = function () {
+          this.onerror = null;
+          this.src = FALLBACK_PLACEHOLDER_URL;
+        };
+
+        // Отрисовка трёх карточек-акцентов
+        const icons = ['✨', '💫', '❄️'];
+        const tags = currentState.tags && currentState.tags.length === 3 ? currentState.tags : DEFAULT_STATE.tags;
+        dom.displayHighlights.innerHTML = tags
+          .map(
+            (label, idx) => `
+            <div class="rounded-2xl bg-gold/10 border border-gold/20 p-3.5 text-center">
+              <div class="text-lg mb-1">${icons[idx] || '🎄'}</div>
+              <div class="text-xs sm:text-sm font-medium text-goldBright">${escapeHtml(label)}</div>
+            </div>
+          `
+          )
+          .join('');
+
+        if (dom.shareLinkField) {
+          dom.shareLinkField.value = buildShareableUrl();
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function setCardOpened(isOpened) {
+        currentState.opened = Boolean(isOpened);
+        if (currentState.opened) {
+          dom.envelopeStage.classList.add('hidden');
+          dom.greetingCardStage.classList.remove('hidden');
+          dom.greetingCardStage.classList.remove('animate-fadeSlideUp');
+          void dom.greetingCardStage.offsetWidth;
+          dom.greetingCardStage.classList.add('animate-fadeSlideUp');
+        } else {
+          dom.greetingCardStage.classList.add('hidden');
+          dom.envelopeStage.classList.remove('hidden');
+          dom.envelopeStage.classList.remove('animate-fadeSlideUp');
+          void dom.envelopeStage.offsetWidth;
+          dom.envelopeStage.classList.add('animate-fadeSlideUp');
+        }
+      }
+
+      // =========================================================================
+      // 6. МОДАЛЬНОЕ ОКНО НАСТРОЕК И ЗАГРУЗКА ФОТО
+      // =========================================================================
+      function openEditorModal() {
+        dom.titleInput.value = currentState.title;
+        dom.senderInput.value = currentState.sender;
+        dom.subtitleInput.value = currentState.subtitle;
+        dom.captionInput.value = currentState.caption;
+        dom.wishInput.value = currentState.wish;
+
+        const tags = currentState.tags || DEFAULT_STATE.tags;
+        dom.tag1Input.value = tags[0] || '';
+        dom.tag2Input.value = tags[1] || '';
+        dom.tag3Input.value = tags[2] || '';
+
+        const currentPhoto = currentState.photo || DEFAULT_PHOTO_URL;
+        dom.modalPhotoPreview.src = currentPhoto;
+        dom.modalPhotoPreview.onerror = function () {
+          this.onerror = null;
+          this.src = FALLBACK_PLACEHOLDER_URL;
+        };
+        dom.photoUrlInput.value =
+          currentPhoto.startsWith('data:') || currentPhoto === DEFAULT_PHOTO_URL ? '' : currentPhoto;
+        dom.shareLinkField.value = buildShareableUrl();
+
+        dom.editorModal.classList.remove('hidden');
+        dom.editorModal.classList.add('flex');
+      }
+
+      function closeEditorModal() {
+        dom.editorModal.classList.add('hidden');
+        dom.editorModal.classList.remove('flex');
+      }
+
+      async function handleFileUpload(file) {
+        if (!file) return;
+        try {
+          showToast('Обрабатываем фотографию...', '🖼️');
+          const compressedDataUrl = await compressImageFile(file);
+          currentState.photo = compressedDataUrl;
+          dom.modalPhotoPreview.src = compressedDataUrl;
+          dom.photoUrlInput.value = '';
+          renderGreeting();
+          saveState(true);
+          setCardOpened(true);
+          showToast('Фото добавлено в открытку!', '🎄');
+        } catch (err) {
+          showToast(err.message || 'Не удалось загрузить фото', '⚠️');
+        }
+      }
+
+      // =========================================================================
+      // 7. АНИМАЦИЯ ПАДАЮЩЕГО СНЕГА (АДАПТИВНЫЙ CANVAS)
+      // =========================================================================
+      function initSnowfall() {
+        const canvas = document.getElementById('snowCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let width = 0;
+        let height = 0;
+        let snowflakes = [];
+
+        function createFlake(randomY = true) {
+          const radius = Math.random() * 2.8 + 1.1;
+          return {
+            x: Math.random() * width,
+            y: randomY ? Math.random() * height : -10,
+            r: radius,
+            speedY: Math.random() * 0.9 + 0.45 + radius * 0.15,
+            drift: Math.random() * 0.6 - 0.3,
+            phase: Math.random() * Math.PI * 2,
+            opacity: Math.random() * 0.55 + 0.25,
+          };
+        }
+
+        function resizeCanvas() {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          width = window.innerWidth;
+          height = window.innerHeight;
+          canvas.width = Math.floor(width * dpr);
+          canvas.height = Math.floor(height * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+          const targetCount = Math.min(120, Math.max(35, Math.floor((width * height) / 14000)));
+          if (snowflakes.length === 0) {
+            snowflakes = Array.from({ length: targetCount }, () => createFlake(true));
+          } else if (snowflakes.length > targetCount) {
+            snowflakes = snowflakes.slice(0, targetCount);
+          } else {
+            while (snowflakes.length < targetCount) {
+              snowflakes.push(createFlake(true));
+            }
+          }
+        }
+
+        function drawSnow() {
+          ctx.clearRect(0, 0, width, height);
+
+          for (let i = 0; i < snowflakes.length; i++) {
+            const flake = snowflakes[i];
+            flake.phase += 0.015;
+            flake.y += flake.speedY;
+            flake.x += flake.drift + Math.sin(flake.phase) * 0.35;
+
+            if (flake.y > height + 12) {
+              snowflakes[i] = createFlake(false);
+            } else if (flake.x > width + 12) {
+              flake.x = -12;
+            } else if (flake.x < -12) {
+              flake.x = width + 12;
+            }
+
+            ctx.beginPath();
+            ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 248, 231, ${flake.opacity})`;
+            ctx.fill();
+          }
+
+          requestAnimationFrame(drawSnow);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        requestAnimationFrame(drawSnow);
+      }
+
+      // =========================================================================
+      // 8. ОБРАБОТЧИКИ СОБЫТИЙ
+      // =========================================================================
+      function bindEvents() {
+        // Открытие и закрытие конверта
+        dom.openGreetingBtn.addEventListener('click', () => setCardOpened(true));
+        dom.envelopeVisual.addEventListener('click', () => setCardOpened(true));
+        dom.envelopeVisual.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setCardOpened(true);
+          }
+        });
+        dom.replayEnvelopeBtn.addEventListener('click', () => setCardOpened(false));
+
+        // Быстрая загрузка фото прямо на открытке
+        dom.quickPhotoInput.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (file) {
+            handleFileUpload(file);
+            e.target.value = '';
+          }
+        });
+
+        // Переключение готового пожелания
+        dom.cycleWishBtn.addEventListener('click', () => {
+          wishCycleIndex = (wishCycleIndex + 1) % SAMPLE_WISHES.length;
+          currentState.wish = SAMPLE_WISHES[wishCycleIndex];
+          renderGreeting();
+          saveState(true);
+          showToast('Пожелание обновлено!', '✨');
+        });
+
+        // Копирование ссылки
+        dom.quickCopyLinkBtn.addEventListener('click', () => {
+          copyTextToClipboard(buildShareableUrl());
+        });
+        dom.shareCardBtn.addEventListener('click', () => {
+          copyTextToClipboard(buildShareableUrl());
+        });
+        dom.modalCopyLinkBtn.addEventListener('click', () => {
+          copyTextToClipboard(dom.shareLinkField.value || buildShareableUrl());
+        });
+
+        // Открытие / закрытие модального окна настроек
+        dom.openEditorBtn.addEventListener('click', openEditorModal);
+        dom.closeEditorBtn.addEventListener('click', closeEditorModal);
+        dom.editorModal.addEventListener('click', (e) => {
+          if (e.target === dom.editorModal) {
+            closeEditorModal();
+          }
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !dom.editorModal.classList.contains('hidden')) {
+            closeEditorModal();
+          }
+        });
+
+        // Загрузка файла в модальном окне
+        dom.modalPhotoFile.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (file) {
+            handleFileUpload(file);
+            e.target.value = '';
+          }
+        });
+
+        // Сброс фото на фото Zhandarbek
+        dom.resetPhotoBtn.addEventListener('click', () => {
+          currentState.photo = DEFAULT_PHOTO_URL;
+          dom.modalPhotoPreview.src = DEFAULT_PHOTO_URL;
+          dom.photoUrlInput.value = '';
+          renderGreeting();
+          saveState(true);
+          showToast('Возвращено фото Zhandarbek', '🎄');
+        });
+
+        // Вставка примера пожелания в форме
+        dom.insertSampleWishBtn.addEventListener('click', () => {
+          wishCycleIndex = (wishCycleIndex + 1) % SAMPLE_WISHES.length;
+          dom.wishInput.value = SAMPLE_WISHES[wishCycleIndex];
+        });
+
+        // Сброс всех настроек к значениям по умолчанию
+        dom.restoreDefaultsBtn.addEventListener('click', () => {
+          currentState = {
+            ...DEFAULT_STATE,
+            tags: [...DEFAULT_STATE.tags],
+            opened: true,
+          };
+          renderGreeting();
+          saveState(true);
+          openEditorModal();
+          showToast('Настройки сброшены по умолчанию', '🔄');
+        });
+
+        // Сохранение формы
+        dom.greetingForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+
+          const customUrl = dom.photoUrlInput.value.trim();
+          let nextPhoto = currentState.photo || DEFAULT_PHOTO_URL;
+          if (customUrl) {
+            nextPhoto = customUrl;
+          }
+
+          currentState = {
+            ...currentState,
+            title: dom.titleInput.value.trim() || DEFAULT_STATE.title,
+            sender: dom.senderInput.value.trim() || DEFAULT_STATE.sender,
+            subtitle: dom.subtitleInput.value.trim() || DEFAULT_STATE.subtitle,
+            caption: dom.captionInput.value.trim() || DEFAULT_STATE.caption,
+            wish: dom.wishInput.value.trim() || DEFAULT_STATE.wish,
+            photo: nextPhoto,
+            tags: [
+              dom.tag1Input.value.trim() || DEFAULT_STATE.tags[0],
+              dom.tag2Input.value.trim() || DEFAULT_STATE.tags[1],
+              dom.tag3Input.value.trim() || DEFAULT_STATE.tags[2],
+            ],
+            opened: true,
+          };
+
+          renderGreeting();
+          saveState(true);
+          setCardOpened(true);
+          closeEditorModal();
+          showToast('Открытка сохранена, ссылка обновлена!', '🎉');
+        });
+      }
+
+      // =========================================================================
+      // 9. ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+      // =========================================================================
+      window.addEventListener('DOMContentLoaded', function () {
+        loadInitialState();
+        renderGreeting();
+        saveState(false);
+        setCardOpened(Boolean(currentState.opened));
+        bindEvents();
+        initSnowfall();
+      });
+    })();
+  </script>
+</body>
+</html>
